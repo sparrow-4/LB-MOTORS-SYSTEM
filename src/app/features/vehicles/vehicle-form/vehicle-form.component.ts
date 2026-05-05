@@ -47,6 +47,13 @@ export class VehicleFormComponent implements OnInit {
       buyerId: ['']
     });
 
+    // Auto-convert vehicle number to uppercase
+    this.vehicleForm.get('vehicleNumber')?.valueChanges.subscribe(val => {
+      if (val) {
+        this.vehicleForm.get('vehicleNumber')?.setValue(val.toUpperCase(), { emitEvent: false });
+      }
+    });
+
     this.vehicleId = this.route.snapshot.paramMap.get('id');
     if (this.vehicleId) {
       this.isEditMode = true;

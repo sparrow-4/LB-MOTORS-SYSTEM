@@ -15,7 +15,9 @@ import { AuthService } from '../../../core/services/auth.service';
         
         <!-- Logo Area -->
         <div class="logo-container">
-          <div class="logo-box">LB</div>
+          <div class="logo-box">
+            <img src="assets/lb logo.jpg" alt="LB Motors Logo" class="login-logo-img" />
+          </div>
         </div>
 
         <!-- Header -->
@@ -113,17 +115,22 @@ import { AuthService } from '../../../core/services/auth.service';
     }
 
     .logo-box {
-      width: 56px;
-      height: 56px;
-      background-color: #0f172a;
-      color: #ffffff;
-      border-radius: 0.75rem;
+      width: 64px;
+      height: 64px;
+      background-color: #ffffff;
+      border-radius: 1rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
-      font-weight: 700;
-      box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.2);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      border: 1px solid #f1f5f9;
+    }
+
+    .login-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
 
     .header-text {
