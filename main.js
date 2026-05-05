@@ -26,8 +26,12 @@ function ensureDirectories() {
   // Ensure document subfolders
   const buyersDocs = path.join(dataFolders.documents, 'buyers');
   const sellersDocs = path.join(dataFolders.documents, 'sellers');
+  const invoicesDocs = path.join(dataFolders.documents, 'invoices');
+  const vehiclesDocs = path.join(dataFolders.documents, 'vehicles');
   if (!fs.existsSync(buyersDocs)) fs.mkdirSync(buyersDocs, { recursive: true });
   if (!fs.existsSync(sellersDocs)) fs.mkdirSync(sellersDocs, { recursive: true });
+  if (!fs.existsSync(invoicesDocs)) fs.mkdirSync(invoicesDocs, { recursive: true });
+  if (!fs.existsSync(vehiclesDocs)) fs.mkdirSync(vehiclesDocs, { recursive: true });
 }
 
 function ensureFiles() {

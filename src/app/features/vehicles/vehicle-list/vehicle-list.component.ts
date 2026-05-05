@@ -104,8 +104,9 @@ export class VehicleListComponent implements OnInit {
     if (this.filterPriceRange) {
       const [min, max] = this.filterPriceRange.split('-').map(Number);
       result = result.filter(v => {
-        if (max) return v.price >= min && v.price <= max;
-        return v.price >= min;
+        const p = v.salesPrice || 0;
+        if (max) return p >= min && p <= max;
+        return p >= min;
       });
     }
 
@@ -154,6 +155,16 @@ export class VehicleListComponent implements OnInit {
     this.filterPriceRange = '';
     this.showAll = false;
     this.applyFilters();
+  }
+
+  onViewDocument(vehicle: Vehicle): void {
+    if (vehicle.document && vehicle.document.filePath) {
+      (window as any).electronAPI.openFile(vehicle.document.filePath).then((success: boolean) => {
+        if (!success) {
+          this.snackBar.open('Could not open document. File might have been moved or deleted.', 'Close', { duration: 3000 });
+        }
+      });
+    }
   }
 
   deleteVehicle(id: string): void {

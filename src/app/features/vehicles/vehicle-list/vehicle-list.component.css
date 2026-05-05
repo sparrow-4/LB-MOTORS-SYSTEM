@@ -120,7 +120,7 @@ select.filter-input {
 
 /* Table */
 .table-card {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .card-header {

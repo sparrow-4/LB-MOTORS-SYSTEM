@@ -88,6 +88,9 @@
               />
               <span class="input-suffix">%</span>
             </div>
+            <div class="mt-2">
+               <button type="button" class="btn-secondary py-1 text-xs" (click)="invoiceForm.patchValue({gstPercent: 0})">Without GST (0%)</button>
+            </div>
           </div>
         </div>
 
@@ -160,19 +163,26 @@
             <span>Base Price</span>
             <span>{{ formatCurrency(basePrice) }}</span>
           </div>
-          @if (gstType === 'intra-state') {
-            <div class="cost-row">
-              <span>CGST ({{ gstPercent / 2 }}%)</span>
-              <span>{{ formatCurrency(cgst) }}</span>
-            </div>
-            <div class="cost-row">
-              <span>SGST ({{ gstPercent / 2 }}%)</span>
-              <span>{{ formatCurrency(sgst) }}</span>
-            </div>
+          @if (gstPercent > 0) {
+            @if (gstType === 'intra-state') {
+              <div class="cost-row">
+                <span>CGST ({{ gstPercent / 2 }}%)</span>
+                <span>{{ formatCurrency(cgst) }}</span>
+              </div>
+              <div class="cost-row">
+                <span>SGST ({{ gstPercent / 2 }}%)</span>
+                <span>{{ formatCurrency(sgst) }}</span>
+              </div>
+            } @else {
+              <div class="cost-row">
+                <span>IGST ({{ gstPercent }}%)</span>
+                <span>{{ formatCurrency(igst) }}</span>
+              </div>
+            }
           } @else {
-            <div class="cost-row">
-              <span>IGST ({{ gstPercent }}%)</span>
-              <span>{{ formatCurrency(igst) }}</span>
+            <div class="cost-row text-green-600 font-semibold">
+              <span>GST Exemption</span>
+              <span>0% (No Tax)</span>
             </div>
           }
         </div>

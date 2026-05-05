@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -20,62 +20,62 @@ import { AuthService } from '../../../core/services/auth.service';
           </div>
         </div>
 
-        <!-- Header -->
-        <div class="header-text">
-          <h1>Welcome back</h1>
-          <p>Please enter your details to sign in.</p>
-        </div>
-
-        <!-- Form -->
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
-          
-          <!-- Username -->
-          <div class="input-group">
-            <label>Username</label>
-            <input 
-              type="text" 
-              [(ngModel)]="username" 
-              name="username" 
-              placeholder="Enter your username" 
-              class="form-input"
-              required
-            >
+          <!-- Header -->
+          <div class="header-text">
+            <h1>Welcome back</h1>
+            <p>Please enter your details to sign in.</p>
           </div>
 
-          <!-- Password -->
-          <div class="input-group">
-            <div class="password-header">
-              <label>Password</label>
-              <a href="#" (click)="$event.preventDefault()">Forgot password?</a>
+          <!-- Form -->
+          <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="login-form">
+            
+            <!-- Username -->
+            <div class="input-group">
+              <label>Username</label>
+              <input 
+                type="text" 
+                [(ngModel)]="username" 
+                name="username" 
+                placeholder="Enter your username" 
+                class="form-input"
+                required
+              >
             </div>
-            <input 
-              type="password" 
-              [(ngModel)]="password" 
-              name="password" 
-              placeholder="••••••••" 
-              class="form-input password-input"
-              required
+
+            <!-- Password -->
+            <div class="input-group">
+              <div class="password-header">
+                <label>Password</label>
+                <a href="#" (click)="$event.preventDefault()">Forgot password?</a>
+              </div>
+              <input 
+                type="password" 
+                [(ngModel)]="password" 
+                name="password" 
+                placeholder="••••••••" 
+                class="form-input password-input"
+                required
+              >
+            </div>
+
+            <!-- Remember me -->
+            <div class="remember-group">
+              <input type="checkbox" id="remember">
+              <label for="remember">Remember for 30 days</label>
+            </div>
+
+            <!-- Submit Button -->
+            <button 
+              type="submit" 
+              class="submit-btn"
+              [disabled]="loginForm.invalid || isLoading"
             >
-          </div>
-
-          <!-- Remember me -->
-          <div class="remember-group">
-            <input type="checkbox" id="remember">
-            <label for="remember">Remember for 30 days</label>
-          </div>
-
-          <!-- Submit Button -->
-          <button 
-            type="submit" 
-            class="submit-btn"
-            [disabled]="loginForm.invalid || isLoading"
-          >
-            <ng-container *ngIf="!isLoading">Sign in</ng-container>
-            <ng-container *ngIf="isLoading">...</ng-container>
-          </button>
-          
-        </form>
-      </div>
+              <ng-container *ngIf="!isLoading">Sign in</ng-container>
+              <ng-container *ngIf="isLoading">...</ng-container>
+            </button>
+            
+          </form>
+        </div>
     </div>
   `,
   styles: [`
@@ -92,7 +92,7 @@ import { AuthService } from '../../../core/services/auth.service';
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #f8fafc;
+      background-color: #ffffff;
       overflow: hidden;
     }
 
@@ -108,6 +108,11 @@ import { AuthService } from '../../../core/services/auth.service';
       margin: 0 1rem;
     }
 
+    @keyframes cardEntrance {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
     .logo-container {
       display: flex;
       justify-content: center;
@@ -115,16 +120,22 @@ import { AuthService } from '../../../core/services/auth.service';
     }
 
     .logo-box {
-      width: 64px;
-      height: 64px;
+      width: 120px;
+      height: 120px;
       background-color: #ffffff;
-      border-radius: 1rem;
+      border-radius: 1.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
       overflow: hidden;
       border: 1px solid #f1f5f9;
+      animation: logoPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes logoPop {
+      0% { opacity: 0; transform: scale(0.5); }
+      100% { opacity: 1; transform: scale(1); }
     }
 
     .login-logo-img {

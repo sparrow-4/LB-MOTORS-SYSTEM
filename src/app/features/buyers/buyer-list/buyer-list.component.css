@@ -217,7 +217,7 @@
 
 /* Table */
 .table-card {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .buyers-table {

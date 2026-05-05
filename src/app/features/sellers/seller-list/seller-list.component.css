@@ -216,7 +216,7 @@
 
 /* Table */
 .table-card {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .sellers-table {

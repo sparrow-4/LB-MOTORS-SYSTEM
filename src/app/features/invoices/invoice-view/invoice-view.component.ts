@@ -5,10 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { InvoiceService } from '../../../core/services/invoice.service';
 import { Invoice } from '../../../shared/models/invoice.model';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 @Component({
   selector: 'app-invoice-view',
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatSnackBarModule],
   templateUrl: './invoice-view.component.html',
   styleUrl: './invoice-view.component.css'
 })
@@ -17,7 +20,8 @@ export class InvoiceViewComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private invoiceService: InvoiceService
+    private invoiceService: InvoiceService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -29,6 +33,39 @@ export class InvoiceViewComponent implements OnInit {
 
   printInvoice(): void {
     window.print();
+  }
+
+  async saveAsPDF(): Promise<void> {
+    const data = document.getElementById('invoicePaper');
+    if (!data || !this.invoice) return;
+
+    try {
+      const canvas = await html2canvas(data, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#ffffff'
+      });
+
+      const imgWidth = 210; // A4 width in mm
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const contentDataURL = canvas.toDataURL('image/png');
+      
+      pdf.addImage(contentDataURL, 'PNG', 0, 0, imgWidth, imgHeight);
+      
+      const pdfBase64 = pdf.output('datauristring');
+      const fileName = `Invoice_${this.invoice.invoiceNumber}.pdf`;
+      
+      // Save to our structured local folder
+      await (window as any).electronAPI.saveDocument('invoices', '', fileName, pdfBase64);
+      
+      this.snackBar.open(`Invoice saved to LB-Motors-Data/documents/invoices/${fileName}`, 'Close', { duration: 5000 });
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      this.snackBar.open('Failed to save invoice as PDF', 'Close', { duration: 3000 });
+    }
   }
 
   formatCurrency(amount: number): string {

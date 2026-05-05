@@ -25,6 +25,11 @@ export class VehicleFormComponent implements OnInit {
   vehicleId: string | null = null;
   vehicleTypes: VehicleType[] = ['Car', 'Bike'];
   buyers: Buyer[] = [];
+  
+  uploadedDoc: any = null;
+  filePreviewUrl: string | null = null;
+  selectedFile: File | null = null;
+  estimatedProfit: number | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -42,9 +47,19 @@ export class VehicleFormComponent implements OnInit {
       vehicleNumber: ['', [Validators.required, Validators.minLength(3)]],
       model: ['', [Validators.required, Validators.minLength(2)]],
       type: ['Car', Validators.required],
-      price: [0, [Validators.required, Validators.min(1)]],
+      purchasePrice: [0, [Validators.required, Validators.min(1)]],
+      salesPrice: [0, [Validators.required, Validators.min(1)]],
       description: [''],
       buyerId: ['']
+    });
+
+    // Profit calculation
+    this.vehicleForm.valueChanges.subscribe(val => {
+      if (val.purchasePrice && val.salesPrice) {
+        this.estimatedProfit = val.salesPrice - val.purchasePrice;
+      } else {
+        this.estimatedProfit = null;
+      }
     });
 
     // Auto-convert vehicle number to uppercase
@@ -60,17 +75,65 @@ export class VehicleFormComponent implements OnInit {
       const vehicle = this.vehicleService.getById(this.vehicleId);
       if (vehicle) {
         this.vehicleForm.patchValue(vehicle);
+        if (vehicle.document) {
+          this.uploadedDoc = vehicle.document;
+        }
       }
     }
   }
 
-  onSubmit(): void {
+  onFileSelect(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        this.snackBar.open('File size must be less than 10MB', 'Close', { duration: 3000 });
+        return;
+      }
+      this.selectedFile = file;
+      this.uploadedDoc = {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type
+      };
+    }
+  }
+
+  removeFile(): void {
+    this.selectedFile = null;
+    this.uploadedDoc = null;
+    this.filePreviewUrl = null;
+  }
+
+  async onSubmit(): Promise<void> {
     if (this.vehicleForm.invalid) {
       this.vehicleForm.markAllAsTouched();
       return;
     }
 
-    const formData = this.vehicleForm.value;
+    const formData = { ...this.vehicleForm.value };
+    
+    // Handle file upload if a new file was selected
+    if (this.selectedFile) {
+      try {
+        const base64 = await this.toBase64(this.selectedFile);
+        const fileName = `RC_${formData.vehicleNumber}_${Date.now()}_${this.selectedFile.name}`;
+        const filePath = await (window as any).electronAPI.saveDocument('vehicles', '', fileName, base64);
+        
+        if (filePath) {
+          formData.document = {
+            fileName: this.selectedFile.name,
+            filePath: filePath,
+            fileType: this.selectedFile.type,
+            fileSize: this.selectedFile.size
+          };
+        }
+      } catch (error) {
+        console.error('Error saving RC document:', error);
+        this.snackBar.open('Failed to save RC document', 'Close', { duration: 3000 });
+      }
+    } else if (this.uploadedDoc) {
+      formData.document = this.uploadedDoc;
+    }
 
     if (this.isEditMode && this.vehicleId) {
       this.vehicleService.update(this.vehicleId, formData);
@@ -81,6 +144,31 @@ export class VehicleFormComponent implements OnInit {
     }
 
     this.router.navigate(['/vehicles']);
+  }
+
+  private toBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: 0
+    }).format(amount);
   }
 
   getError(field: string): string {
@@ -96,7 +184,8 @@ export class VehicleFormComponent implements OnInit {
       vehicleNumber: 'Vehicle number',
       model: 'Make & model',
       type: 'Vehicle type',
-      price: 'Price'
+      purchasePrice: 'Purchase price',
+      salesPrice: 'Sales price'
     };
     return labels[field] || field;
   }

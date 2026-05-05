@@ -27,11 +27,33 @@
   padding: 24px 24px 20px;
 }
 
+.brand-logo {
+  width: 52px;
+  height: 52px;
+  background: #ffffff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--color-border);
+}
+
 .brand-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 6px;
+}
+
+/* Entrance Animation */
+.sidebar-header {
+  animation: sidebarEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes sidebarEntrance {
+  0% { opacity: 0; transform: translateY(15px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 .brand-text {

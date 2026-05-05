@@ -122,6 +122,42 @@ html, body {
   background-color: #e2e8f0 !important;
 }
 
+/* Global Fix for Menu Overlapping and Clipping */
+.cdk-overlay-container {
+  z-index: 9999 !important;
+}
+
+.mat-mdc-menu-panel {
+  background-color: white !important;
+  box-shadow: var(--shadow-dropdown) !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--color-border) !important;
+  min-width: 180px !important;
+}
+
+.mat-mdc-menu-item {
+  min-height: 44px !important;
+  font-family: var(--font-body) !important;
+}
+
+.mat-mdc-menu-item .mat-icon {
+  margin-right: 12px !important;
+  color: var(--color-on-surface-variant) !important;
+}
+
+/* Table container fix */
+.card-container.table-card {
+  overflow: visible !important;
+}
+
+.mat-mdc-table {
+  overflow: visible !important;
+}
+
+.mat-mdc-cell, .mat-mdc-header-cell {
+  overflow: visible !important;
+}
+
 /* ===== Custom Scrollbar ===== */
 ::-webkit-scrollbar {
   width: 6px;

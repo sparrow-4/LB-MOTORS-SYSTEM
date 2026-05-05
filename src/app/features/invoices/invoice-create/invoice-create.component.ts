@@ -70,7 +70,7 @@ export class InvoiceCreateComponent implements OnInit {
     const vehicleId = this.invoiceForm.get('vehicleId')?.value;
     this.selectedVehicle = this.availableVehicles.find(v => v.id === vehicleId) || null;
     if (this.selectedVehicle) {
-      this.invoiceForm.patchValue({ basePrice: this.selectedVehicle.price });
+      this.invoiceForm.patchValue({ basePrice: this.selectedVehicle.salesPrice });
     }
   }
 

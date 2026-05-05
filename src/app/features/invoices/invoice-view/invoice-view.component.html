@@ -5,6 +5,10 @@
       <mat-icon>arrow_back</mat-icon>
       Back to Invoices
     </a>
+    <button class="btn-secondary" (click)="saveAsPDF()" id="saveInvoiceBtn">
+      <mat-icon>save_alt</mat-icon>
+      Save to Folder
+    </button>
     <button class="btn-primary" (click)="printInvoice()" id="printInvoiceBtn">
       <mat-icon>print</mat-icon>
       Print Invoice
@@ -21,7 +25,7 @@
         <p class="company-detail">Used Cars & Bikes Dealership</p>
       </div>
       <div class="invoice-meta">
-        <div class="invoice-badge">TAX INVOICE</div>
+        <div class="invoice-badge">{{ invoice.gstPercent > 0 ? 'TAX INVOICE' : 'BILL OF SUPPLY' }}</div>
         <div class="meta-row">
           <span class="meta-label">Invoice No:</span>
           <span class="meta-value">{{ invoice.invoiceNumber }}</span>
@@ -65,20 +69,22 @@
           <td>Vehicle Sale - {{ invoice.vehicleName }} ({{ invoice.vehicleNumber }})</td>
           <td class="text-right">{{ formatCurrency(invoice.basePrice) }}</td>
         </tr>
-        @if (invoice.gstType === 'intra-state') {
-          <tr>
-            <td>CGST ({{ invoice.gstPercent / 2 }}%)</td>
-            <td class="text-right">{{ formatCurrency(invoice.cgst) }}</td>
-          </tr>
-          <tr>
-            <td>SGST ({{ invoice.gstPercent / 2 }}%)</td>
-            <td class="text-right">{{ formatCurrency(invoice.sgst) }}</td>
-          </tr>
-        } @else {
-          <tr>
-            <td>IGST ({{ invoice.gstPercent }}%)</td>
-            <td class="text-right">{{ formatCurrency(invoice.igst) }}</td>
-          </tr>
+        @if (invoice.gstPercent > 0) {
+          @if (invoice.gstType === 'intra-state') {
+            <tr>
+              <td>CGST ({{ invoice.gstPercent / 2 }}%)</td>
+              <td class="text-right">{{ formatCurrency(invoice.cgst) }}</td>
+            </tr>
+            <tr>
+              <td>SGST ({{ invoice.gstPercent / 2 }}%)</td>
+              <td class="text-right">{{ formatCurrency(invoice.sgst) }}</td>
+            </tr>
+          } @else {
+            <tr>
+              <td>IGST ({{ invoice.gstPercent }}%)</td>
+              <td class="text-right">{{ formatCurrency(invoice.igst) }}</td>
+            </tr>
+          }
         }
       </tbody>
       <tfoot>

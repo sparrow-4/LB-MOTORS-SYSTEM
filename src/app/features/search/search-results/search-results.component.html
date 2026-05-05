@@ -14,9 +14,16 @@
             <mat-icon>directions_car</mat-icon>
             <h2>Vehicle Information</h2>
           </div>
-          <span class="pro-status-chip" [ngClass]="{'available': vehicle.status === 'Available', 'sold': vehicle.status === 'Sold'}">
-            {{ vehicle.status }}
-          </span>
+          <div class="header-actions">
+            <span class="pro-status-chip" [ngClass]="{'available': vehicle.status === 'Available', 'sold': vehicle.status === 'Sold'}">
+              {{ vehicle.status }}
+            </span>
+            @if (vehicle.document) {
+              <button class="pro-btn-solid sm ml-4" (click)="openNativeFile(vehicle.document.filePath)">
+                <mat-icon>description</mat-icon> View RC
+              </button>
+            }
+          </div>
         </div>
         
         <div class="pro-grid">
@@ -49,8 +56,8 @@
                 <h3>Purchased From (Buyer)</h3>
               </div>
               @if (relatedBuyer.document) {
-                <button class="pro-btn-outline" (click)="viewDocument(relatedBuyer.document.base64Content, relatedBuyer.document.fileType)">
-                  <mat-icon>verified</mat-icon> View ID
+                <button class="pro-btn-solid sm" (click)="openNativeFile(relatedBuyer.document.base64Content || relatedBuyer.document.filePath)">
+                  <mat-icon>visibility</mat-icon> View ID
                 </button>
               }
             </div>
@@ -80,8 +87,8 @@
                 <h3>Sold To (Seller)</h3>
               </div>
               @if (relatedSeller.document) {
-                <button class="pro-btn-outline" (click)="viewDocument(relatedSeller.document.base64Content, relatedSeller.document.fileType)">
-                  <mat-icon>verified</mat-icon> View ID
+                <button class="pro-btn-solid sm" (click)="openNativeFile(relatedSeller.document.base64Content || relatedSeller.document.filePath)">
+                  <mat-icon>visibility</mat-icon> View ID
                 </button>
               }
             </div>
@@ -161,9 +168,9 @@
                   <span><mat-icon class="mini-icon">badge</mat-icon> ID: {{ buyer.aadhaarNumber }}</span>
                 </div>
               </div>
-              <div class="item-action">
+               <div class="item-action">
                 @if (buyer.document) {
-                  <button class="pro-btn-solid" (click)="viewDocument(buyer.document.base64Content, buyer.document.fileType)">
+                  <button class="pro-btn-solid" (click)="openNativeFile(buyer.document.base64Content || buyer.document.filePath)">
                     <mat-icon>visibility</mat-icon> View Document
                   </button>
                 } @else {
@@ -195,9 +202,9 @@
                   <span><mat-icon class="mini-icon">badge</mat-icon> ID: {{ seller.aadhaarNumber }}</span>
                 </div>
               </div>
-              <div class="item-action">
+               <div class="item-action">
                 @if (seller.document) {
-                  <button class="pro-btn-solid" (click)="viewDocument(seller.document.base64Content, seller.document.fileType)">
+                  <button class="pro-btn-solid" (click)="openNativeFile(seller.document.base64Content || seller.document.filePath)">
                     <mat-icon>visibility</mat-icon> View Document
                   </button>
                 } @else {

@@ -55,25 +55,53 @@
           }
         </div>
 
-        <div class="form-group">
-          <label class="form-label">
-            Listed Price <span class="required">*</span>
-          </label>
-          <div class="input-with-prefix">
-            <span class="input-prefix">₹</span>
-            <input
-              type="number"
-              class="form-input with-prefix"
-              formControlName="price"
-              placeholder="0.00"
-              id="priceInput"
-            />
+          <div class="form-group">
+            <label class="form-label">
+              Purchase Price (INR) <span class="required">*</span>
+            </label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">₹</span>
+              <input
+                type="number"
+                class="form-input with-prefix"
+                formControlName="purchasePrice"
+                placeholder="0.00"
+                id="purchasePriceInput"
+              />
+            </div>
+            @if (vehicleForm.get('purchasePrice')?.touched && vehicleForm.get('purchasePrice')?.invalid) {
+              <span class="error-text">{{ getError('purchasePrice') }}</span>
+            }
           </div>
-          @if (vehicleForm.get('price')?.touched && vehicleForm.get('price')?.invalid) {
-            <span class="error-text">{{ getError('price') }}</span>
-          }
+
+          <div class="form-group">
+            <label class="form-label">
+              Expected Sales Price (INR) <span class="required">*</span>
+            </label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">₹</span>
+              <input
+                type="number"
+                class="form-input with-prefix"
+                formControlName="salesPrice"
+                placeholder="0.00"
+                id="salesPriceInput"
+              />
+            </div>
+            @if (vehicleForm.get('salesPrice')?.touched && vehicleForm.get('salesPrice')?.invalid) {
+              <span class="error-text">{{ getError('salesPrice') }}</span>
+            }
+          </div>
         </div>
-      </div>
+
+        <div class="form-row" *ngIf="estimatedProfit !== null">
+          <div class="form-group full-width">
+            <div class="profit-indicator" [ngClass]="{'profit': estimatedProfit >= 0, 'loss': estimatedProfit < 0}">
+              <mat-icon>{{ estimatedProfit >= 0 ? 'trending_up' : 'trending_down' }}</mat-icon>
+              <span>Estimated {{ estimatedProfit >= 0 ? 'Profit' : 'Loss' }}: <strong>{{ formatCurrency(estimatedProfit) }}</strong></span>
+            </div>
+          </div>
+        </div>
 
       <div class="form-row">
         <div class="form-group full-width">
@@ -96,6 +124,32 @@
           rows="4"
           id="descriptionInput"
         ></textarea>
+      </div>
+
+      <!-- RC Document Upload -->
+      <div class="form-group full-width">
+        <label class="form-label">Upload RC Document (Registration Certificate)</label>
+        @if (!uploadedDoc) {
+          <div class="upload-zone" (click)="fileInput.click()" id="rcUploadZone">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <p class="upload-text">Click to upload vehicle RC or Insurance</p>
+            <p class="upload-hint">PDF, JPG, PNG up to 10MB</p>
+            <input #fileInput type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileSelect($event)" hidden />
+          </div>
+        } @else {
+          <div class="uploaded-file">
+            <div class="file-info">
+              <mat-icon class="file-icon">description</mat-icon>
+              <div>
+                <div class="file-name">{{ uploadedDoc.fileName }}</div>
+                <div class="file-size">{{ formatFileSize(uploadedDoc.fileSize) }}</div>
+              </div>
+            </div>
+            <button type="button" class="remove-file-btn" (click)="removeFile()" id="removeRcBtn">
+              <mat-icon>close</mat-icon>
+            </button>
+          </div>
+        }
       </div>
 
       <div class="form-divider"></div>

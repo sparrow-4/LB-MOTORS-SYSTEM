@@ -90,6 +90,6 @@ export class VehicleService {
   getTotalFleetValue(): number {
     return this.getAll()
       .filter(v => v.status === 'Available')
-      .reduce((sum, v) => sum + v.price, 0);
+      .reduce((sum, v) => sum + (v.salesPrice || 0), 0);
   }
 }

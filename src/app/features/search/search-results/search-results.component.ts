@@ -8,10 +8,11 @@ import { VehicleService } from '../../../core/services/vehicle.service';
 import { BuyerService } from '../../../core/services/buyer.service';
 import { SellerService } from '../../../core/services/seller.service';
 import { InvoiceService } from '../../../core/services/invoice.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-search-results',
-  imports: [CommonModule, MatIconModule, MatButtonModule, MatTableModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatTableModule, MatSnackBarModule],
   templateUrl: './search-results.component.html',
   styleUrl: './search-results.component.css'
 })
@@ -33,7 +34,8 @@ export class SearchResultsComponent implements OnInit {
     private vehicleService: VehicleService,
     private invoiceService: InvoiceService,
     private buyerService: BuyerService,
-    private sellerService: SellerService
+    private sellerService: SellerService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -85,14 +87,17 @@ export class SearchResultsComponent implements OnInit {
     );
   }
 
-  viewDocument(base64Content: string, fileType: string): void {
-    if (!base64Content) return;
-    const newWindow = window.open();
-    if (newWindow) {
-      newWindow.document.write(
-        `<iframe width='100%' height='100%' src='data:${fileType};base64,${base64Content}' frameborder='0'></iframe>`
-      );
+  openNativeFile(filePath: string): void {
+    if (!filePath) {
+      this.snackBar.open('Document file path not found', 'Close', { duration: 3000 });
+      return;
     }
+    
+    (window as any).electronAPI.openFile(filePath).then((success: boolean) => {
+      if (!success) {
+        this.snackBar.open('Could not open document. The file may have been moved or deleted.', 'Close', { duration: 3000 });
+      }
+    });
   }
 
   formatCurrency(amount: number): string {
