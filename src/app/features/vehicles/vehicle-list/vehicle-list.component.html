@@ -1,0 +1,249 @@
+<div class="vehicle-list-container">
+  <!-- Page Header -->
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-header">Stock Management</h1>
+      <p class="page-subtitle">Manage your Cars and Bikes inventory stock.</p>
+    </div>
+    <a routerLink="/vehicles/add" class="btn-primary" id="addVehicleBtn">
+      <mat-icon>add</mat-icon>
+      Add Stock
+    </a>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card" id="inventoryCountCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Total Stock</span>
+        <mat-icon class="stat-icon">storefront</mat-icon>
+      </div>
+      <div class="stat-value">{{ vehicles.length }}</div>
+    </div>
+
+    <div class="stat-card" id="typeBreakdownCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Stock Breakdown</span>
+      </div>
+      <div class="status-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-value">{{ carCount }}</span>
+          <span class="breakdown-label">Cars</span>
+        </div>
+        <div class="breakdown-divider"></div>
+        <div class="breakdown-item">
+          <span class="breakdown-value">{{ bikeCount }}</span>
+          <span class="breakdown-label">Bikes</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card" id="statusBreakdownCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Status</span>
+      </div>
+      <div class="status-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-value">{{ availableCount }}</span>
+          <span class="breakdown-label">Available</span>
+        </div>
+        <div class="breakdown-divider"></div>
+        <div class="breakdown-item">
+          <span class="breakdown-value">{{ soldCount }}</span>
+          <span class="breakdown-label">Sold</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card highlight" id="fleetValueCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Total Stock Value</span>
+      </div>
+      <div class="stat-value">{{ formatCurrency(totalFleetValue) }}</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="card-container filters-card">
+    <div class="filters-grid">
+      <div class="filter-field">
+        <label class="form-label">Vehicle Number</label>
+        <input
+          type="text"
+          class="filter-input"
+          placeholder="e.g. LBM-001"
+          [(ngModel)]="searchNumber"
+          (input)="applyFilters()"
+          id="filterNumber"
+        />
+      </div>
+      <div class="filter-field">
+        <label class="form-label">Model / Make</label>
+        <input
+          type="text"
+          class="filter-input"
+          placeholder="e.g. Porsche 911"
+          [(ngModel)]="searchModel"
+          (input)="applyFilters()"
+          id="filterModel"
+        />
+      </div>
+      <div class="filter-field">
+        <label class="form-label">Buyer (Origin)</label>
+        <input
+          type="text"
+          class="filter-input"
+          placeholder="Search buyer name..."
+          [(ngModel)]="searchBuyer"
+          (input)="applyFilters()"
+          id="filterBuyer"
+        />
+      </div>
+      <div class="filter-field">
+        <label class="form-label">Seller (Destination)</label>
+        <input
+          type="text"
+          class="filter-input"
+          placeholder="Search seller name..."
+          [(ngModel)]="searchSeller"
+          (input)="applyFilters()"
+          id="filterSeller"
+        />
+      </div>
+      <div class="filter-field">
+        <label class="form-label">Price Range</label>
+        <select class="filter-input" [(ngModel)]="filterPriceRange" (change)="applyFilters()" id="filterPrice">
+          <option value="">All Prices</option>
+          <option value="0-500000">Under ₹5L</option>
+          <option value="500000-1000000">₹5L - ₹10L</option>
+          <option value="1000000-2500000">₹10L - ₹25L</option>
+          <option value="2500000-5000000">₹25L - ₹50L</option>
+          <option value="5000000-0">Above ₹50L</option>
+        </select>
+      </div>
+      <div class="filter-field">
+        <label class="form-label">Vehicle Type</label>
+        <select class="filter-input" [(ngModel)]="filterType" (change)="applyFilters()" id="filterType">
+          <option value="">All Types</option>
+          <option value="Car">Car</option>
+          <option value="Bike">Bike</option>
+        </select>
+      </div>
+    </div>
+    <div class="filters-actions">
+      <button class="btn-secondary" (click)="clearFilters()" id="clearFiltersBtn">Clear Filters</button>
+    </div>
+  </div>
+
+  <!-- Vehicle Table -->
+  <div class="card-container table-card">
+    <div class="card-header">
+      <h2 class="section-title">Current Listings</h2>
+    </div>
+
+    @if (pagedVehicles.length > 0) {
+      <table mat-table [dataSource]="pagedVehicles" class="vehicle-table">
+        <!-- Vehicle Number -->
+        <ng-container matColumnDef="vehicleNumber">
+          <th mat-header-cell *matHeaderCellDef>Vehicle Number</th>
+          <td mat-cell *matCellDef="let v">
+            <span class="vehicle-number">{{ v.vehicleNumber }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Buyer (Origin) -->
+        <ng-container matColumnDef="buyer">
+          <th mat-header-cell *matHeaderCellDef>Buyer (Origin)</th>
+          <td mat-cell *matCellDef="let v">{{ getBuyerName(v) }}</td>
+        </ng-container>
+
+        <!-- Seller (Destination) -->
+        <ng-container matColumnDef="seller">
+          <th mat-header-cell *matHeaderCellDef>Seller (Destination)</th>
+          <td mat-cell *matCellDef="let v">{{ getSellerName(v) }}</td>
+        </ng-container>
+
+        <!-- Model -->
+        <ng-container matColumnDef="model">
+          <th mat-header-cell *matHeaderCellDef>Model</th>
+          <td mat-cell *matCellDef="let v">{{ v.model }}</td>
+        </ng-container>
+
+        <!-- Type -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let v">{{ v.type }}</td>
+        </ng-container>
+
+        <!-- Price -->
+        <ng-container matColumnDef="price">
+          <th mat-header-cell *matHeaderCellDef>Price</th>
+          <td mat-cell *matCellDef="let v">
+            <span class="price-value">{{ formatCurrency(v.price) }}</span>
+          </td>
+        </ng-container>
+
+        <!-- Status -->
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let v">
+            <span class="status-chip" [class.available]="v.status === 'Available'" [class.sold]="v.status === 'Sold'">
+              {{ v.status }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let v">
+            <button mat-icon-button [matMenuTriggerFor]="actionMenu" id="vehicleActions-{{v.id}}">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #actionMenu="matMenu">
+              <a mat-menu-item [routerLink]="['/vehicles/edit', v.id]">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </a>
+              <button mat-menu-item (click)="deleteVehicle(v.id)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      @if (showAll) {
+        <mat-paginator
+          [length]="totalItems"
+          [pageSize]="pageSize"
+          [pageSizeOptions]="[10, 25, 50]"
+          [pageIndex]="pageIndex"
+          (page)="onPageChange($event)"
+          showFirstLastButtons
+          id="vehiclePaginator"
+        ></mat-paginator>
+      }
+
+      <div class="p-4 flex justify-center border-t border-gray-200">
+        <button mat-button color="primary" (click)="toggleShowAll()">
+          {{ showAll ? 'Show Only Recent 10' : 'Show All Vehicles' }}
+        </button>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">storefront</mat-icon>
+        <h3>No stock found</h3>
+        <p>Add your first car or bike to get started.</p>
+        <a routerLink="/vehicles/add" class="btn-primary">
+          <mat-icon>add</mat-icon>
+          Add Stock
+        </a>
+      </div>
+    }
+  </div>
+</div>

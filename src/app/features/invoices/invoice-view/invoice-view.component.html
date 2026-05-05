@@ -1,0 +1,129 @@
+@if (invoice) {
+  <!-- Action Bar (No Print) -->
+  <div class="action-bar no-print">
+    <a routerLink="/invoices" class="btn-secondary">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Invoices
+    </a>
+    <button class="btn-primary" (click)="printInvoice()" id="printInvoiceBtn">
+      <mat-icon>print</mat-icon>
+      Print Invoice
+    </button>
+  </div>
+
+  <!-- Printable Invoice -->
+  <div class="invoice-paper" id="invoicePaper">
+    <!-- Header -->
+    <div class="invoice-header">
+      <div class="company-info">
+        <h1 class="company-name">LB Motors</h1>
+        <p class="company-tagline">Dealer Management System</p>
+        <p class="company-detail">Used Cars & Bikes Dealership</p>
+      </div>
+      <div class="invoice-meta">
+        <div class="invoice-badge">TAX INVOICE</div>
+        <div class="meta-row">
+          <span class="meta-label">Invoice No:</span>
+          <span class="meta-value">{{ invoice.invoiceNumber }}</span>
+        </div>
+        <div class="meta-row">
+          <span class="meta-label">Date:</span>
+          <span class="meta-value">{{ formatDate(invoice.createdAt) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="invoice-divider"></div>
+
+    <!-- Buyer & Vehicle Details -->
+    <div class="details-grid">
+      <div class="detail-section">
+        <h3 class="detail-title">Bill To:</h3>
+        <p class="detail-name">{{ invoice.buyerName }}</p>
+        <p class="detail-text">Phone: {{ invoice.buyerPhone }}</p>
+        <p class="detail-text">{{ invoice.buyerAddress }}</p>
+      </div>
+      <div class="detail-section">
+        <h3 class="detail-title">Vehicle Details:</h3>
+        <p class="detail-name">{{ invoice.vehicleName }}</p>
+        <p class="detail-text">Vehicle No: {{ invoice.vehicleNumber }}</p>
+      </div>
+    </div>
+
+    <div class="invoice-divider"></div>
+
+    <!-- Invoice Table -->
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th class="col-desc">Description</th>
+          <th class="col-amount">Amount (INR)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Vehicle Sale - {{ invoice.vehicleName }} ({{ invoice.vehicleNumber }})</td>
+          <td class="text-right">{{ formatCurrency(invoice.basePrice) }}</td>
+        </tr>
+        @if (invoice.gstType === 'intra-state') {
+          <tr>
+            <td>CGST ({{ invoice.gstPercent / 2 }}%)</td>
+            <td class="text-right">{{ formatCurrency(invoice.cgst) }}</td>
+          </tr>
+          <tr>
+            <td>SGST ({{ invoice.gstPercent / 2 }}%)</td>
+            <td class="text-right">{{ formatCurrency(invoice.sgst) }}</td>
+          </tr>
+        } @else {
+          <tr>
+            <td>IGST ({{ invoice.gstPercent }}%)</td>
+            <td class="text-right">{{ formatCurrency(invoice.igst) }}</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td><strong>Total Amount</strong></td>
+          <td class="text-right"><strong>{{ formatCurrency(invoice.totalAmount) }}</strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <!-- Amount in Words -->
+    <div class="amount-words">
+      <span class="words-label">Amount in Words:</span>
+      <span class="words-value">{{ numberToWords(invoice.totalAmount) }}</span>
+    </div>
+
+    @if (invoice.notes) {
+      <div class="invoice-notes">
+        <span class="notes-label">Notes:</span>
+        <span class="notes-text">{{ invoice.notes }}</span>
+      </div>
+    }
+
+    <div class="invoice-divider"></div>
+
+    <!-- Footer -->
+    <div class="invoice-footer">
+      <div class="footer-left">
+        <p class="footer-text">Thank you for your business!</p>
+        <p class="footer-subtext">This is a computer-generated invoice.</p>
+      </div>
+      <div class="footer-right">
+        <div class="signature-line"></div>
+        <p class="signature-text">Authorized Signature</p>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="not-found">
+    <mat-icon class="not-found-icon">error_outline</mat-icon>
+    <h2>Invoice Not Found</h2>
+    <p>The invoice you're looking for doesn't exist.</p>
+    <a routerLink="/invoices" class="btn-primary">
+      <mat-icon>arrow_back</mat-icon>
+      Back to Invoices
+    </a>
+  </div>
+}

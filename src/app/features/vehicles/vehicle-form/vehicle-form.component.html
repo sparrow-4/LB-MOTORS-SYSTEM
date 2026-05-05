@@ -1,0 +1,112 @@
+<div class="form-page-container">
+  <div class="card-container form-card">
+    <div class="form-header">
+      <h1 class="page-header">{{ isEditMode ? 'Edit Vehicle' : 'Add New Vehicle' }}</h1>
+      <p class="page-subtitle">{{ isEditMode ? 'Update vehicle details.' : 'Enter the details below to add a new vehicle to the inventory system.' }}</p>
+    </div>
+
+    <form [formGroup]="vehicleForm" (ngSubmit)="onSubmit()" class="vehicle-form" id="vehicleForm">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">
+            Vehicle Number (VIN) <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-input"
+            formControlName="vehicleNumber"
+            placeholder="e.g. 1HGCM82633A..."
+            id="vehicleNumberInput"
+          />
+          @if (vehicleForm.get('vehicleNumber')?.touched && vehicleForm.get('vehicleNumber')?.invalid) {
+            <span class="error-text">{{ getError('vehicleNumber') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Vehicle Type <span class="required">*</span>
+          </label>
+          <select class="form-input" formControlName="type" id="vehicleTypeSelect">
+            @for (t of vehicleTypes; track t) {
+              <option [value]="t">{{ t }}</option>
+            }
+          </select>
+          @if (vehicleForm.get('type')?.touched && vehicleForm.get('type')?.invalid) {
+            <span class="error-text">{{ getError('type') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">
+            Make & Model <span class="required">*</span>
+          </label>
+          <input
+            type="text"
+            class="form-input"
+            formControlName="model"
+            placeholder="e.g. Honda Accord EX-L"
+            id="modelInput"
+          />
+          @if (vehicleForm.get('model')?.touched && vehicleForm.get('model')?.invalid) {
+            <span class="error-text">{{ getError('model') }}</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">
+            Listed Price <span class="required">*</span>
+          </label>
+          <div class="input-with-prefix">
+            <span class="input-prefix">₹</span>
+            <input
+              type="number"
+              class="form-input with-prefix"
+              formControlName="price"
+              placeholder="0.00"
+              id="priceInput"
+            />
+          </div>
+          @if (vehicleForm.get('price')?.touched && vehicleForm.get('price')?.invalid) {
+            <span class="error-text">{{ getError('price') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label class="form-label">Purchased From (Buyer)</label>
+          <select class="form-input" formControlName="buyerId" id="buyerSelect">
+            <option value="">-- Select Origin Buyer (Optional) --</option>
+            @for (b of buyers; track b.id) {
+              <option [value]="b.id">{{ b.name }} ({{ b.phone }})</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label class="form-label">Vehicle Description</label>
+        <textarea
+          class="form-input form-textarea"
+          formControlName="description"
+          placeholder="Provide details about condition, features, and history..."
+          rows="4"
+          id="descriptionInput"
+        ></textarea>
+      </div>
+
+      <div class="form-divider"></div>
+
+      <div class="form-actions">
+        <a routerLink="/vehicles" class="btn-secondary" id="cancelBtn">Cancel</a>
+        <button type="submit" class="btn-primary" [disabled]="vehicleForm.invalid" id="saveVehicleBtn">
+          <mat-icon>save</mat-icon>
+          {{ isEditMode ? 'Update Vehicle' : 'Save Vehicle' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,182 @@
+<div class="buyer-list-container">
+  <!-- Page Header -->
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-header">Buyers</h1>
+      <p class="page-subtitle">Manage and view all registered dealership buyers.</p>
+    </div>
+    <button class="btn-primary" (click)="toggleForm()" id="addBuyerBtn">
+      <mat-icon>{{ showForm ? 'close' : 'add' }}</mat-icon>
+      {{ showForm ? 'Close Form' : 'Add Buyer' }}
+    </button>
+  </div>
+
+  <!-- Add/Edit Form -->
+  @if (showForm) {
+    <div class="card-container form-card" id="buyerFormCard">
+      <div class="form-header">
+        <h2 class="section-title">{{ isEditing ? 'Edit Buyer' : 'Add New Buyer' }}</h2>
+      </div>
+      <form [formGroup]="buyerForm" (ngSubmit)="onSubmit()" class="buyer-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Name <span class="required">*</span></label>
+            <input type="text" class="form-input" formControlName="name" placeholder="Full name" id="buyerNameInput" />
+            @if (buyerForm.get('name')?.touched && buyerForm.get('name')?.invalid) {
+              <span class="error-text">{{ getError('name') }}</span>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Phone <span class="required">*</span></label>
+            <input type="text" class="form-input" formControlName="phone" placeholder="10-digit phone number" id="buyerPhoneInput" />
+            @if (buyerForm.get('phone')?.touched && buyerForm.get('phone')?.invalid) {
+              <span class="error-text">{{ getError('phone') }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Address <span class="required">*</span></label>
+            <input type="text" class="form-input" formControlName="address" placeholder="Full address" id="buyerAddressInput" />
+            @if (buyerForm.get('address')?.touched && buyerForm.get('address')?.invalid) {
+              <span class="error-text">{{ getError('address') }}</span>
+            }
+          </div>
+          <div class="form-group">
+            <label class="form-label">Aadhaar Number <span class="required">*</span></label>
+            <input type="text" class="form-input" formControlName="aadhaarNumber" placeholder="12-digit Aadhaar number" id="buyerAadhaarInput" />
+            @if (buyerForm.get('aadhaarNumber')?.touched && buyerForm.get('aadhaarNumber')?.invalid) {
+              <span class="error-text">{{ getError('aadhaarNumber') }}</span>
+            }
+          </div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="form-group">
+          <label class="form-label">Upload Document (Aadhaar/License)</label>
+          @if (!uploadedDoc) {
+            <div class="upload-zone" (click)="fileInput.click()" id="uploadZone">
+              <mat-icon class="upload-icon">cloud_upload</mat-icon>
+              <p class="upload-text">Click to upload or drag and drop</p>
+              <p class="upload-hint">PDF, JPG, PNG up to 10MB</p>
+              <input #fileInput type="file" accept=".pdf,.jpg,.jpeg,.png" (change)="onFileSelect($event)" hidden />
+            </div>
+          } @else {
+            <div class="uploaded-file">
+              <div class="file-info">
+                <mat-icon class="file-icon">description</mat-icon>
+                <div>
+                  <div class="file-name">{{ uploadedDoc.fileName }}</div>
+                  <div class="file-size">{{ formatFileSize(uploadedDoc.fileSize) }}</div>
+                </div>
+              </div>
+              <button type="button" class="remove-file-btn" (click)="removeFile()" id="removeFileBtn">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+            @if (filePreviewUrl && (uploadedDoc.fileType.startsWith('image/'))) {
+              <div class="file-preview">
+                <img [src]="filePreviewUrl" alt="Document preview" class="preview-image" />
+              </div>
+            }
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="toggleForm()" id="cancelBuyerBtn">Cancel</button>
+          <button type="submit" class="btn-primary" [disabled]="buyerForm.invalid" id="saveBuyerBtn">
+            <mat-icon>save</mat-icon>
+            {{ isEditing ? 'Update Buyer' : 'Save Buyer' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+
+  <!-- Search -->
+  <div class="search-bar-container">
+    <mat-icon class="search-icon">search</mat-icon>
+    <input
+      type="text"
+      class="search-bar-input"
+      placeholder="Search buyers by name, phone, or Aadhaar..."
+      [(ngModel)]="searchQuery"
+      (input)="applyFilter()"
+      id="buyerSearchInput"
+    />
+  </div>
+
+  <!-- Buyers Table -->
+  <div class="card-container table-card">
+    @if (pagedBuyers.length > 0) {
+      <table mat-table [dataSource]="pagedBuyers" class="buyers-table">
+        <!-- Name -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let b">
+            <div class="name-cell">
+              <div class="avatar-circle">{{ getInitials(b.name) }}</div>
+              <span>{{ b.name }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Phone -->
+        <ng-container matColumnDef="phone">
+          <th mat-header-cell *matHeaderCellDef>Phone Number</th>
+          <td mat-cell *matCellDef="let b">{{ b.phone }}</td>
+        </ng-container>
+
+        <!-- Aadhaar -->
+        <ng-container matColumnDef="aadhaarNumber">
+          <th mat-header-cell *matHeaderCellDef>ID Number</th>
+          <td mat-cell *matCellDef="let b">{{ b.aadhaarNumber }}</td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let b">
+            <button mat-icon-button [matMenuTriggerFor]="buyerMenu" id="buyerActions-{{b.id}}">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #buyerMenu="matMenu">
+              <button mat-menu-item (click)="onViewDocument(b)" [disabled]="!b.document">
+                <mat-icon>visibility</mat-icon>
+                <span>View ID Document</span>
+              </button>
+              <button mat-menu-item (click)="editBuyer(b)">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+              <button mat-menu-item (click)="deleteBuyer(b.id)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
+              </button>
+            </mat-menu>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25]"
+        [pageIndex]="pageIndex"
+        (page)="onPageChange($event)"
+        showFirstLastButtons
+        id="buyerPaginator"
+      ></mat-paginator>
+    } @else {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">person_outline</mat-icon>
+        <h3>No buyers found</h3>
+        <p>Add your first buyer to get started.</p>
+      </div>
+    }
+  </div>
+</div>

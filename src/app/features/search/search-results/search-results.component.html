@@ -1,0 +1,222 @@
+<div class="search-page-wrapper">
+  <div class="search-page-header">
+    <h1 class="page-header">Global Search Results</h1>
+    <p class="page-subtitle">Showing all matches for "<span class="search-highlight">{{ searchQuery }}</span>"</p>
+  </div>
+
+  @if (vehicle || matchingBuyers.length > 0 || matchingSellers.length > 0) {
+    
+    <!-- Vehicle Match -->
+    @if (vehicle) {
+      <div class="pro-card vehicle-card">
+        <div class="pro-card-header">
+          <div class="header-title">
+            <mat-icon>directions_car</mat-icon>
+            <h2>Vehicle Information</h2>
+          </div>
+          <span class="pro-status-chip" [ngClass]="{'available': vehicle.status === 'Available', 'sold': vehicle.status === 'Sold'}">
+            {{ vehicle.status }}
+          </span>
+        </div>
+        
+        <div class="pro-grid">
+          <div class="data-block">
+            <span class="data-label">Vehicle Number</span>
+            <span class="data-value highlight-value">{{ vehicle.vehicleNumber }}</span>
+          </div>
+          <div class="data-block">
+            <span class="data-label">Make & Model</span>
+            <span class="data-value">{{ vehicle.model }}</span>
+          </div>
+          <div class="data-block">
+            <span class="data-label">Vehicle Type</span>
+            <span class="data-value">{{ vehicle.type }}</span>
+          </div>
+          <div class="data-block">
+            <span class="data-label">Listed Price</span>
+            <span class="data-value price-value">{{ formatCurrency(vehicle.price) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="parties-grid">
+        <!-- Origin (Purchased From) - The "Buyer" in their terminology -->
+        @if (relatedBuyer) {
+          <div class="pro-card party-card buyer-card">
+            <div class="pro-card-header small">
+              <div class="header-title">
+                <mat-icon>person</mat-icon>
+                <h3>Purchased From (Buyer)</h3>
+              </div>
+              @if (relatedBuyer.document) {
+                <button class="pro-btn-outline" (click)="viewDocument(relatedBuyer.document.base64Content, relatedBuyer.document.fileType)">
+                  <mat-icon>verified</mat-icon> View ID
+                </button>
+              }
+            </div>
+            <div class="pro-grid single-col">
+              <div class="data-block">
+                <span class="data-label">Name</span>
+                <span class="data-value">{{ relatedBuyer.name }}</span>
+              </div>
+              <div class="data-block">
+                <span class="data-label">Phone</span>
+                <span class="data-value">{{ relatedBuyer.phone }}</span>
+              </div>
+              <div class="data-block">
+                <span class="data-label">Address</span>
+                <span class="data-value">{{ relatedBuyer.address }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Destination (Sold To) - The "Seller" in their terminology -->
+        @if (relatedSeller) {
+          <div class="pro-card party-card seller-card">
+            <div class="pro-card-header small">
+              <div class="header-title">
+                <mat-icon>storefront</mat-icon>
+                <h3>Sold To (Seller)</h3>
+              </div>
+              @if (relatedSeller.document) {
+                <button class="pro-btn-outline" (click)="viewDocument(relatedSeller.document.base64Content, relatedSeller.document.fileType)">
+                  <mat-icon>verified</mat-icon> View ID
+                </button>
+              }
+            </div>
+            <div class="pro-grid single-col">
+              <div class="data-block">
+                <span class="data-label">Name</span>
+                <span class="data-value">{{ relatedSeller.name }}</span>
+              </div>
+              <div class="data-block">
+                <span class="data-label">Phone</span>
+                <span class="data-value">{{ relatedSeller.phone }}</span>
+              </div>
+              <div class="data-block">
+                <span class="data-label">Address</span>
+                <span class="data-value">{{ relatedSeller.address }}</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Transaction History -->
+      @if (invoices.length > 0) {
+        <div class="pro-card table-card">
+          <div class="pro-card-header">
+            <div class="header-title">
+              <mat-icon>receipt_long</mat-icon>
+              <h2>Transaction History</h2>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table mat-table [dataSource]="invoices" class="pro-table">
+              <ng-container matColumnDef="date">
+                <th mat-header-cell *matHeaderCellDef> Date </th>
+                <td mat-cell *matCellDef="let inv"> {{ formatDate(inv.createdAt) }} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="invoiceNumber">
+                <th mat-header-cell *matHeaderCellDef> Invoice # </th>
+                <td mat-cell *matCellDef="let inv"> <span class="invoice-badge">{{ inv.invoiceNumber }}</span> </td>
+              </ng-container>
+
+              <ng-container matColumnDef="buyerName">
+                <th mat-header-cell *matHeaderCellDef> Buyer </th>
+                <td mat-cell *matCellDef="let inv"> {{ inv.buyerName }} </td>
+              </ng-container>
+
+              <ng-container matColumnDef="amount">
+                <th mat-header-cell *matHeaderCellDef> Amount </th>
+                <td mat-cell *matCellDef="let inv" class="amount-value"> {{ formatCurrency(inv.totalAmount) }} </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="invoiceColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: invoiceColumns;"></tr>
+            </table>
+          </div>
+        </div>
+      }
+    }
+
+    <!-- Other Matching Buyers -->
+    @if (matchingBuyers.length > 0) {
+      <div class="pro-card list-card mt-margin">
+        <div class="pro-card-header">
+          <div class="header-title">
+            <mat-icon>group</mat-icon>
+            <h2>Matching Buyers Found ({{ matchingBuyers.length }})</h2>
+          </div>
+        </div>
+        <div class="pro-list">
+          @for (buyer of matchingBuyers; track buyer.id) {
+            <div class="pro-list-item">
+              <div class="item-info">
+                <div class="item-primary">{{ buyer.name }}</div>
+                <div class="item-secondary">
+                  <span><mat-icon class="mini-icon">phone</mat-icon> {{ buyer.phone }}</span>
+                  <span><mat-icon class="mini-icon">badge</mat-icon> ID: {{ buyer.aadhaarNumber }}</span>
+                </div>
+              </div>
+              <div class="item-action">
+                @if (buyer.document) {
+                  <button class="pro-btn-solid" (click)="viewDocument(buyer.document.base64Content, buyer.document.fileType)">
+                    <mat-icon>visibility</mat-icon> View Document
+                  </button>
+                } @else {
+                  <span class="no-doc">No document</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Other Matching Sellers -->
+    @if (matchingSellers.length > 0) {
+      <div class="pro-card list-card mt-margin">
+        <div class="pro-card-header">
+          <div class="header-title">
+            <mat-icon>store</mat-icon>
+            <h2>Matching Sellers Found ({{ matchingSellers.length }})</h2>
+          </div>
+        </div>
+        <div class="pro-list">
+          @for (seller of matchingSellers; track seller.id) {
+            <div class="pro-list-item">
+              <div class="item-info">
+                <div class="item-primary">{{ seller.name }}</div>
+                <div class="item-secondary">
+                  <span><mat-icon class="mini-icon">phone</mat-icon> {{ seller.phone }}</span>
+                  <span><mat-icon class="mini-icon">badge</mat-icon> ID: {{ seller.aadhaarNumber }}</span>
+                </div>
+              </div>
+              <div class="item-action">
+                @if (seller.document) {
+                  <button class="pro-btn-solid" (click)="viewDocument(seller.document.base64Content, seller.document.fileType)">
+                    <mat-icon>visibility</mat-icon> View Document
+                  </button>
+                } @else {
+                  <span class="no-doc">No document</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+  } @else {
+    <div class="pro-empty-state">
+      <div class="empty-icon-wrapper">
+        <mat-icon>manage_search</mat-icon>
+      </div>
+      <h3>No Matches Found</h3>
+      <p>We couldn't find any vehicles, buyers, or sellers matching "<strong>{{ searchQuery }}</strong>".</p>
+    </div>
+  }
+</div>

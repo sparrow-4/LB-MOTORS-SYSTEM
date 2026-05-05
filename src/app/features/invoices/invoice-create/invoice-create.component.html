@@ -1,0 +1,200 @@
+<div class="invoice-create-container">
+  <!-- Page Header -->
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-header">Create Invoice</h1>
+      <p class="page-subtitle">Generate a new billing document for a vehicle sale.</p>
+    </div>
+    <div class="header-date">
+      <mat-icon>calendar_today</mat-icon>
+      <span>Date: {{ formatDate(today) }}</span>
+    </div>
+  </div>
+
+  <div class="invoice-layout">
+    <!-- Left: Form -->
+    <div class="card-container form-section">
+      <div class="form-section-header">
+        <mat-icon>receipt_long</mat-icon>
+        <h2 class="section-title">Invoice Details</h2>
+      </div>
+
+      <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="invoice-form" id="invoiceForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Select Vehicle <span class="required">*</span></label>
+            <select
+              class="form-input"
+              formControlName="vehicleId"
+              (change)="onVehicleChange()"
+              id="invoiceVehicleSelect"
+            >
+              <option value="">Choose from inventory...</option>
+              @for (v of availableVehicles; track v.id) {
+                <option [value]="v.id">{{ v.model }} ({{ v.vehicleNumber }})</option>
+              }
+            </select>
+            @if (invoiceForm.get('vehicleId')?.touched && invoiceForm.get('vehicleId')?.invalid) {
+              <span class="error-text">Vehicle is required</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Select Seller <span class="required">*</span></label>
+            <select
+              class="form-input"
+              formControlName="buyerId"
+              (change)="onBuyerChange()"
+              id="invoiceBuyerSelect"
+            >
+              <option value="">Choose existing profile...</option>
+              @for (s of sellers; track s.id) {
+                <option [value]="s.id">{{ s.name }} ({{ s.phone }})</option>
+              }
+            </select>
+            @if (invoiceForm.get('buyerId')?.touched && invoiceForm.get('buyerId')?.invalid) {
+              <span class="error-text">Seller is required</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Base Price (INR) <span class="required">*</span></label>
+            <div class="input-with-prefix">
+              <span class="input-prefix">₹</span>
+              <input
+                type="number"
+                class="form-input with-prefix"
+                formControlName="basePrice"
+                placeholder="0.00"
+                id="invoiceBasePriceInput"
+              />
+            </div>
+            @if (invoiceForm.get('basePrice')?.touched && invoiceForm.get('basePrice')?.invalid) {
+              <span class="error-text">Base price must be greater than 0</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">GST (%)</label>
+            <div class="input-with-suffix">
+              <input
+                type="number"
+                class="form-input with-suffix"
+                formControlName="gstPercent"
+                placeholder="18"
+                id="invoiceGstInput"
+              />
+              <span class="input-suffix">%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">GST Type</label>
+          <div class="radio-group">
+            <label class="radio-option">
+              <input type="radio" formControlName="gstType" value="intra-state" />
+              <span class="radio-label">Intra-State (CGST + SGST)</span>
+            </label>
+            <label class="radio-option">
+              <input type="radio" formControlName="gstType" value="inter-state" />
+              <span class="radio-label">Inter-State (IGST)</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Internal Notes</label>
+          <textarea
+            class="form-input form-textarea"
+            formControlName="notes"
+            placeholder="Optional details regarding this transaction..."
+            rows="3"
+            id="invoiceNotesInput"
+          ></textarea>
+        </div>
+      </form>
+    </div>
+
+    <!-- Right: Calculated Total -->
+    <div class="summary-section">
+      <div class="card-container summary-card">
+        <div class="summary-header">
+          <h2 class="section-title">Calculated Total</h2>
+          <mat-icon class="summary-icon">calculate</mat-icon>
+        </div>
+
+        <!-- Vehicle/Seller Preview -->
+        <div class="selection-preview">
+          @if (selectedVehicle && selectedSeller) {
+            <div class="preview-vehicle">
+              <mat-icon>directions_car</mat-icon>
+              <div>
+                <div class="preview-name">{{ selectedVehicle.model }}</div>
+                <div class="preview-detail">{{ selectedVehicle.vehicleNumber }}</div>
+              </div>
+            </div>
+            <div class="preview-buyer">
+              <mat-icon>storefront</mat-icon>
+              <div>
+                <div class="preview-name">{{ selectedSeller.name }}</div>
+                <div class="preview-detail">{{ selectedSeller.phone }}</div>
+              </div>
+            </div>
+          } @else {
+            <div class="pending-selection">
+              <mat-icon>hourglass_empty</mat-icon>
+              <div>
+                <div class="preview-name">Pending Selection</div>
+                <div class="preview-detail">Vehicle & Seller</div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Breakdown -->
+        <div class="cost-breakdown">
+          <div class="cost-row">
+            <span>Base Price</span>
+            <span>{{ formatCurrency(basePrice) }}</span>
+          </div>
+          @if (gstType === 'intra-state') {
+            <div class="cost-row">
+              <span>CGST ({{ gstPercent / 2 }}%)</span>
+              <span>{{ formatCurrency(cgst) }}</span>
+            </div>
+            <div class="cost-row">
+              <span>SGST ({{ gstPercent / 2 }}%)</span>
+              <span>{{ formatCurrency(sgst) }}</span>
+            </div>
+          } @else {
+            <div class="cost-row">
+              <span>IGST ({{ gstPercent }}%)</span>
+              <span>{{ formatCurrency(igst) }}</span>
+            </div>
+          }
+        </div>
+
+        <div class="total-row">
+          <div>
+            <div class="total-label">Total Due</div>
+            <div class="total-value">{{ formatCurrency(totalAmount) }}</div>
+            <div class="total-hint">INR (Incl. taxes)</div>
+          </div>
+        </div>
+
+        <button
+          class="btn-primary generate-btn"
+          (click)="onSubmit()"
+          [disabled]="invoiceForm.invalid"
+          id="generateInvoiceBtn"
+        >
+          <mat-icon>play_arrow</mat-icon>
+          Generate Invoice
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,72 @@
+<ng-container *ngIf="isAuthenticated$ | async; else unauth">
+  <!-- Sidebar -->
+  <aside class="sidebar-container" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo">
+        <mat-icon class="brand-icon">directions_car</mat-icon>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">LB Motors</span>
+        <span class="brand-subtitle">Inventory Management</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of navItems; track item.route) {
+        <a
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="nav-item"
+          [id]="'nav-' + item.label.toLowerCase()"
+        >
+          <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span class="nav-label">{{ item.label }}</span>
+          <div class="active-indicator"></div>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <a class="nav-item" (click)="logout()">
+        <mat-icon class="nav-icon">logout</mat-icon>
+        <span class="nav-label">Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main Area -->
+  <div class="main-wrapper">
+    <!-- Top Navbar -->
+    <header class="top-navbar" id="topNavbar">
+      <div class="search-container">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Search inventory, vehicles, or clients..."
+          [(ngModel)]="searchQuery"
+          (keydown)="onSearch($event)"
+          id="globalSearch"
+        />
+      </div>
+
+      <div class="navbar-actions">
+        <button class="icon-btn" id="notificationBtn">
+          <mat-icon>notifications_none</mat-icon>
+        </button>
+        <a routerLink="/profile" class="profile-avatar" id="profileAvatar" title="My Profile">
+          <mat-icon>person</mat-icon>
+        </a>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <main class="main-content" id="mainContent">
+      <router-outlet />
+    </main>
+  </div>
+</ng-container>
+
+<ng-template #unauth>
+  <router-outlet />
+</ng-template>

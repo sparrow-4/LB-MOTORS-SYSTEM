@@ -1,0 +1,168 @@
+<div class="dashboard-container">
+  <!-- Page Header -->
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-header">Overview</h1>
+      <p class="page-subtitle">Real-time performance metrics and recent activity.</p>
+    </div>
+    <a routerLink="/invoices" class="btn-primary" id="newTransactionBtn">
+      <mat-icon>add</mat-icon>
+      New Transaction
+    </a>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid">
+    <div class="stat-card" id="totalInventoryCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Total Inventory</span>
+        <mat-icon class="stat-icon">directions_car</mat-icon>
+      </div>
+      <div class="stat-value">{{ totalVehicles }}</div>
+      <div class="stat-change">
+        <span>{{ availableVehicles }} available</span>
+      </div>
+    </div>
+
+    <div class="stat-card" id="vehiclesSoldCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Vehicles Sold</span>
+        <mat-icon class="stat-icon">sell</mat-icon>
+      </div>
+      <div class="stat-value">{{ vehiclesSold }}</div>
+      <div class="stat-change">
+        <span>of {{ totalVehicles }} total</span>
+      </div>
+    </div>
+
+    <div class="stat-card" id="availableValueCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Available Value</span>
+        <mat-icon class="stat-icon">inventory</mat-icon>
+      </div>
+      <div class="stat-value text-primary-light" style="color: var(--color-primary-light);">{{ formatCurrency(totalFleetValue) }}</div>
+      <div class="stat-change">
+        <span>Current fleet worth</span>
+      </div>
+    </div>
+
+    <!-- Profit Card -->
+    <div class="stat-card profit-box" id="profitOnlyCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Total Income (Profit)</span>
+        <mat-icon class="stat-icon text-green-500" style="color: var(--color-success); opacity: 1;">trending_up</mat-icon>
+      </div>
+      <div class="stat-value" style="color: var(--color-success);">
+        {{ formatCurrency(totalProfit) }}
+      </div>
+      <div class="stat-change">
+        <span>From all sales</span>
+      </div>
+    </div>
+
+    <!-- Loss Card -->
+    <div class="stat-card loss-box" id="lossOnlyCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Total Expense (Loss)</span>
+        <mat-icon class="stat-icon text-red-500" style="color: var(--color-error); opacity: 1;">trending_down</mat-icon>
+      </div>
+      <div class="stat-value" style="color: var(--color-error);">
+        {{ formatCurrency(totalLoss) }}
+      </div>
+      <div class="stat-change">
+        <span>From all expenses</span>
+      </div>
+    </div>
+
+    <!-- Net Balance Card -->
+    <div class="stat-card highlight" id="profitLossCard">
+      <div class="stat-card-header">
+        <span class="stat-label">Net Performance</span>
+        <mat-icon class="stat-icon">account_balance_wallet</mat-icon>
+      </div>
+      <div class="stat-value" [ngClass]="{'text-green-400': profitLoss >= 0, 'text-red-400': profitLoss < 0}">
+        {{ formatCurrency(profitLoss) }}
+      </div>
+      <div class="stat-change">
+        <span>{{ profitLoss >= 0 ? 'Surplus' : 'Deficit' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Transactions -->
+  <div class="card-container transactions-card">
+    <div class="card-header">
+      <h2 class="section-title">Recent Transactions</h2>
+      <a routerLink="/invoices" class="view-all-link" id="viewAllTransactions">
+        View All
+        <mat-icon class="view-all-icon">arrow_forward</mat-icon>
+      </a>
+    </div>
+
+    @if (recentInvoices.length > 0) {
+      <table mat-table [dataSource]="recentInvoices" class="transactions-table">
+        <!-- Date Column -->
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let invoice">{{ formatDate(invoice.createdAt) }}</td>
+        </ng-container>
+
+        <!-- Vehicle Column -->
+        <ng-container matColumnDef="vehicle">
+          <th mat-header-cell *matHeaderCellDef>Vehicle</th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="vehicle-cell">
+              <div class="vehicle-thumb">
+                <mat-icon>directions_car</mat-icon>
+              </div>
+              <div>
+                <div class="vehicle-name">{{ invoice.vehicleName }}</div>
+                <div class="vehicle-vin">{{ invoice.vehicleNumber }}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Type Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="status-chip sale">Sale</span>
+          </td>
+        </ng-container>
+
+        <!-- Buyer Column -->
+        <ng-container matColumnDef="buyer">
+          <th mat-header-cell *matHeaderCellDef>Client</th>
+          <td mat-cell *matCellDef="let invoice">
+            <div class="client-cell">
+              <div class="avatar-circle">{{ getInitials(invoice.buyerName) }}</div>
+              <span>{{ invoice.buyerName }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Amount Column -->
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let invoice">
+            <span class="amount-value">{{ formatCurrency(invoice.totalAmount) }}</span>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" [routerLink]="['/invoices/view', row.id]" class="clickable-row"></tr>
+      </table>
+    } @else {
+      <div class="empty-state">
+        <mat-icon class="empty-icon">receipt_long</mat-icon>
+        <h3>No transactions yet</h3>
+        <p>Create your first invoice to see transactions here.</p>
+        <a routerLink="/invoices" class="btn-primary">
+          <mat-icon>add</mat-icon>
+          Create Invoice
+        </a>
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,169 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* Stats Grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+@media (max-width: 1200px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.profit-box {
+  border-left: 5px solid var(--color-success) !important;
+}
+
+.loss-box {
+  border-left: 5px solid var(--color-error) !important;
+}
+
+.stat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.stat-icon {
+  color: var(--color-outline);
+  font-size: 24px;
+  opacity: 0.5;
+}
+
+.stat-card.highlight .stat-icon {
+  color: var(--color-on-primary);
+  opacity: 0.7;
+}
+
+/* Transactions Card */
+.transactions-card {
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 24px 16px;
+}
+
+.view-all-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-on-surface-variant);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.view-all-link:hover {
+  color: var(--color-primary-container);
+}
+
+.view-all-icon {
+  font-size: 18px;
+}
+
+.transactions-table {
+  width: 100%;
+}
+
+.vehicle-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.vehicle-thumb {
+  width: 44px;
+  height: 44px;
+  background: var(--color-surface-container);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-outline);
+  border: 1px solid var(--color-border);
+}
+
+.vehicle-name {
+  font-weight: 500;
+  color: var(--color-on-surface);
+  font-size: 14px;
+}
+
+.vehicle-vin {
+  font-size: 12px;
+  color: var(--color-outline);
+  margin-top: 2px;
+}
+
+.client-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.amount-value {
+  font-weight: 600;
+  font-family: var(--font-body);
+  color: var(--color-on-surface);
+}
+
+.clickable-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 56px;
+  width: 56px;
+  height: 56px;
+  color: var(--color-outline-variant);
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  margin-bottom: 6px;
+}
+
+.empty-state p {
+  color: var(--color-on-surface-variant);
+  font-size: 14px;
+  margin-bottom: 20px;
+}

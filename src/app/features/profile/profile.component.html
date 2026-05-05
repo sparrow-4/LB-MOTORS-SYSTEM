@@ -1,0 +1,96 @@
+<div class="profile-container">
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-header">My Profile</h1>
+      <p class="page-subtitle">Manage your account settings and update your password.</p>
+    </div>
+  </div>
+
+  <div class="profile-grid">
+    <!-- Profile Info Card -->
+    <div class="card-container profile-card">
+      <div class="card-header">
+        <mat-icon>person</mat-icon>
+        <h2 class="section-title">Profile Details</h2>
+      </div>
+      
+      <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
+        <div class="form-group">
+          <label class="form-label">Username <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <mat-icon class="field-icon">account_circle</mat-icon>
+            <input
+              type="text"
+              class="form-input with-icon"
+              formControlName="username"
+              placeholder="Enter username"
+            />
+          </div>
+          @if (profileForm.get('username')?.touched && profileForm.get('username')?.invalid) {
+            <span class="error-text">Username must be at least 4 characters</span>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="profileForm.invalid">
+            <mat-icon>save</mat-icon>
+            Update Profile
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Security Card -->
+    <div class="card-container security-card">
+      <div class="card-header">
+        <mat-icon>security</mat-icon>
+        <h2 class="section-title">Security Settings</h2>
+      </div>
+      
+      <form [formGroup]="passwordForm" (ngSubmit)="onUpdatePassword()" class="profile-form">
+        <div class="form-group">
+          <label class="form-label">New Password <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <mat-icon class="field-icon">lock</mat-icon>
+            <input
+              type="password"
+              class="form-input with-icon"
+              formControlName="newPassword"
+              placeholder="Enter new password"
+            />
+          </div>
+          @if (passwordForm.get('newPassword')?.touched && passwordForm.get('newPassword')?.invalid) {
+            <span class="error-text">Password must be at least 4 characters</span>
+          }
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Confirm New Password <span class="required">*</span></label>
+          <div class="input-with-icon">
+            <mat-icon class="field-icon">lock_clock</mat-icon>
+            <input
+              type="password"
+              class="form-input with-icon"
+              formControlName="confirmPassword"
+              placeholder="Confirm new password"
+            />
+          </div>
+          @if (passwordForm.get('confirmPassword')?.touched) {
+            @if (passwordForm.errors?.['mismatch']) {
+              <span class="error-text">Passwords do not match</span>
+            } @else if (passwordForm.get('confirmPassword')?.invalid) {
+              <span class="error-text">Confirm password is required</span>
+            }
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary" [disabled]="passwordForm.invalid">
+            <mat-icon>lock_open</mat-icon>
+            Update Password
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,346 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #001e40;
+  --color-primary-container: #003366;
+  --color-primary-light: #3a5f94;
+  --color-primary-inverse: #a7c8ff;
+  --color-on-primary: #ffffff;
+  --color-surface: #f6faff;
+  --color-surface-dim: #d2dbe4;
+  --color-surface-container: #e6eff8;
+  --color-surface-container-low: #ecf5fe;
+  --color-surface-container-high: #e0e9f2;
+  --color-surface-white: #ffffff;
+  --color-on-surface: #141d23;
+  --color-on-surface-variant: #43474f;
+  --color-outline: #737780;
+  --color-outline-variant: #c3c6d1;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-success: #1a7a2e;
+  --color-success-bg: #dcf5e0;
+  --color-warning: #b58a00;
+  --color-warning-bg: #fff3cd;
+  --color-info: #0d6efd;
+  --color-info-bg: #cfe2ff;
+  --color-divider: #f1f3f5;
+  --color-border: #e9ecef;
+  --color-bg-app: #f8f9fa;
+
+  --font-heading: 'Manrope', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  --shadow-card: 0px 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-dropdown: 0px 12px 24px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 0px 4px 12px rgba(0, 0, 0, 0.08);
+
+  --spacing-sidebar: 260px;
+  --spacing-container: 32px;
+  --spacing-gutter: 24px;
+  --spacing-card-gap: 20px;
+}
+
+/* ===== Base Resets ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background-color: var(--color-bg-app);
+  color: var(--color-on-surface);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Angular Material Theme Overrides ===== */
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mat-mdc-table {
+  background: transparent !important;
+}
+
+.mat-mdc-header-cell {
+  font-family: var(--font-body) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  color: var(--color-on-surface-variant) !important;
+  background-color: var(--color-bg-app) !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.mat-mdc-cell {
+  font-family: var(--font-body) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  color: var(--color-on-surface) !important;
+  border-bottom: 1px solid var(--color-divider) !important;
+}
+
+.mat-mdc-row:hover {
+  background-color: var(--color-surface-container-low) !important;
+}
+
+.mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px !important;
+}
+
+.mat-mdc-snack-bar-container .mdc-snackbar__surface {
+  border-radius: 8px !important;
+}
+
+/* Fix for Material Dropdown Panels being transparent */
+.cdk-overlay-pane .mat-mdc-select-panel {
+  background-color: white !important;
+  box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.15) !important;
+  border-radius: 4px !important;
+  padding: 8px 0 !important;
+}
+
+.mat-mdc-option {
+  background-color: white !important;
+}
+
+.mat-mdc-option:hover {
+  background-color: #f1f5f9 !important;
+}
+
+.mat-mdc-option.mdc-list-item--selected {
+  background-color: #e2e8f0 !important;
+}
+
+/* ===== Custom Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-outline-variant);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-outline);
+}
+
+/* ===== Utility Classes ===== */
+.page-header {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+  letter-spacing: -0.02em;
+  color: var(--color-on-surface);
+}
+
+.page-subtitle {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-on-surface-variant);
+  margin-top: 4px;
+}
+
+.section-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+  color: var(--color-on-surface);
+}
+
+.card-container {
+  background: var(--color-surface-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+}
+
+.stat-card {
+  background: var(--color-surface-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  padding: 24px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.stat-card:hover {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-1px);
+}
+
+.stat-card.highlight {
+  background: var(--color-primary-container);
+  border-color: var(--color-primary-container);
+}
+
+.stat-card.highlight .stat-label,
+.stat-card.highlight .stat-value,
+.stat-card.highlight .stat-change {
+  color: var(--color-on-primary);
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+}
+
+.stat-value {
+  font-family: var(--font-heading);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  margin-top: 8px;
+}
+
+.stat-change {
+  font-size: 13px;
+  color: var(--color-success);
+  margin-top: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Status Chips */
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.status-chip.available {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+.status-chip.sold {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.status-chip.pending {
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+.status-chip.sale {
+  background: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+.status-chip.acquisition {
+  background: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+/* Avatar */
+.avatar-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-primary-light);
+  background: var(--color-surface-container);
+  flex-shrink: 0;
+}
+
+/* Primary Button */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: #002244;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--color-on-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--color-surface-container-low);
+  border-color: var(--color-outline-variant);
+}
+
+/* Form Labels */
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-label .required {
+  color: var(--color-error);
+}
+
+/* Print Styles */
+@media print {
+  .sidebar-container,
+  .top-navbar,
+  .no-print {
+    display: none !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+}

@@ -1,0 +1,67 @@
+<div class="page-container">
+  <div class="page-header-row">
+    <div>
+      <h1 class="page-header">Expenses</h1>
+      <p class="page-subtitle">Track dealership expenses.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openExpenseDialog()">
+      <mat-icon>add</mat-icon>
+      Add Expense
+    </button>
+  </div>
+
+
+  <div class="card-container">
+    @if (expenses.length > 0) {
+      <table mat-table [dataSource]="pagedExpenses" class="w-full">
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef> Date </th>
+          <td mat-cell *matCellDef="let exp"> {{ exp.date }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Title </th>
+          <td mat-cell *matCellDef="let exp"> {{ exp.title }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="category">
+          <th mat-header-cell *matHeaderCellDef> Category </th>
+          <td mat-cell *matCellDef="let exp"> <span class="status-chip">{{ exp.category }}</span> </td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef> Amount </th>
+          <td mat-cell *matCellDef="let exp" class="font-semibold text-red-500"> {{ formatCurrency(exp.amount) }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-right"> Actions </th>
+          <td mat-cell *matCellDef="let exp" class="text-right">
+            <button mat-icon-button color="warn" (click)="deleteExpense(exp.id)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator
+        [length]="totalItems"
+        [pageSize]="pageSize"
+        [pageSizeOptions]="[5, 10, 25]"
+        (page)="onPageChange($event)">
+      </mat-paginator>
+    } @else {
+      <div class="empty-state flex flex-col items-center justify-center p-12 text-center text-gray-500">
+        <mat-icon class="empty-icon text-6xl mb-4 opacity-50">money_off</mat-icon>
+        <h3 class="text-xl font-medium mb-2">No expenses found</h3>
+        <p class="mb-4">Add your first expense to get started.</p>
+        <button mat-raised-button color="primary" (click)="openExpenseDialog()">
+          <mat-icon>add</mat-icon> Add Expense
+        </button>
+      </div>
+    }
+  </div>
+</div>
