@@ -16,7 +16,7 @@ import { AuthService } from '../../../core/services/auth.service';
         <!-- Logo Area -->
         <div class="logo-container">
           <div class="logo-box">
-            <img src="assets/lb logo.jpg" alt="LB Motors Logo" class="login-logo-img" />
+            <img src="lb-logo.jpg" alt="LB Motors Logo" class="login-logo-img" />
           </div>
         </div>
 
